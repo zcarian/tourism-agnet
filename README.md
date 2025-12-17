@@ -19,7 +19,24 @@ This tool:
 3. Create a new token with "Read" permissions
 4. Copy the token
 
-### 2. Set Up Environment
+### 2. Create a Virtual Environment
+
+It's recommended to use a virtual environment to keep dependencies isolated:
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate it (Linux/Mac)
+source venv/bin/activate
+
+# Activate it (Windows)
+venv\Scripts\activate
+```
+
+You'll know it's active when you see `(venv)` at the start of your terminal prompt.
+
+### 3. Set Up Environment Variables
 
 Create a `.env` file in the project root:
 
@@ -27,13 +44,13 @@ Create a `.env` file in the project root:
 HF_TOKEN=your_huggingface_token_here
 ```
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Test Your Setup
+### 5. Test Your Setup
 
 Run the test script to verify everything works:
 
@@ -43,7 +60,7 @@ python src/test.py
 
 You should see: `tourism agent HF OK`
 
-### 5. Run the Pipeline
+### 6. Run the Pipeline
 
 ```bash
 python src/pipeline.py
