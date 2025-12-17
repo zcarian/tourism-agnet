@@ -10,3 +10,13 @@ beautifulsoup4
 pypdf
 
 tqdm
+beautifulsoup4
+httpx
+huggingface_hub
+langchain
+langchain-community
+langchain-core
+pypdf
+python-dotenv
+requests
+tqdm

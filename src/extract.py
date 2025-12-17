@@ -1,3 +1,14 @@
+"""
+Document classification and data extraction module.
+
+This module provides functions to:
+1. Classify documents to determine if they contain tourism projections
+2. Extract structured projection data (visitor arrivals, revenue forecasts)
+
+The module uses a Hugging Face LLM to analyze document text and return
+structured JSON responses.
+"""
+
 from typing import Dict, Any
 from textwrap import shorten
 import json
@@ -26,7 +37,27 @@ JSON schema:
 
 def classify_document(text: str, max_chars: int = 4000) -> Dict[str, Any]:
     """
-    Use Hugging Face model to classify whether a document contains future tourism projections.
+    Classify whether a document contains future tourism projections.
+    
+    Uses a Hugging Face LLM to analyze the document text and determine
+    if it contains quantitative forecasts for tourism arrivals or revenue.
+    
+    Args:
+        text: The full text content of the document to classify.
+        max_chars: Maximum characters to send to the model (default 4000).
+                   Longer documents are truncated to fit within token limits.
+    
+    Returns:
+        A dictionary containing:
+        - contains_projections (bool): Whether the document has projections
+        - projection_type (str): "arrivals", "revenue", "both", or "none"
+        - years_mentioned (list): Years referenced in projections
+        - confidence (float): Model's confidence score (0.0 to 1.0)
+    
+    Example:
+        >>> result = classify_document("Tourism arrivals expected to reach 50M by 2025")
+        >>> result["contains_projections"]
+        True
     """
     short_text = shorten(text, width=max_chars, placeholder="... [TRUNCATED] ...")
 
@@ -46,7 +77,6 @@ def classify_document(text: str, max_chars: int = 4000) -> Dict[str, Any]:
     try:
         data = json.loads(content)
     except json.JSONDecodeError:
-        # Fallback if the model misbehaves
         data = {
             "contains_projections": False,
             "projection_type": "none",
@@ -57,10 +87,34 @@ def classify_document(text: str, max_chars: int = 4000) -> Dict[str, Any]:
 
     return data
 
+
 def extract_projections(text: str, country: str, url: str, max_chars: int = 8000) -> Dict[str, Any]:
     """
-    Extract numerical FUTURE tourism projections (arrivals & revenue)
-    from a document using the HF model.
+    Extract numerical tourism projections from a document.
+    
+    Parses the document text to find and structure future tourism forecasts,
+    including visitor arrival numbers and revenue projections.
+    
+    Args:
+        text: The full text content of the document.
+        country: The country this document relates to (e.g., "USA", "Spain").
+        url: The source URL of the document (for reference tracking).
+        max_chars: Maximum characters to analyze (default 8000).
+    
+    Returns:
+        A dictionary containing:
+        - country (str): The country name
+        - source_url (str): Where the data came from
+        - projections (list): List of projection objects, each with:
+            - indicator: "arrivals" or "revenue"
+            - year: The forecast year (int)
+            - value: The projected number
+            - unit: "visitors", "USD", "EUR", or "local_currency"
+    
+    Example:
+        >>> result = extract_projections(doc_text, "USA", "https://example.com/forecast.pdf")
+        >>> for proj in result["projections"]:
+        ...     print(f"{proj['year']}: {proj['value']} {proj['unit']}")
     """
     short_text = shorten(text, width=max_chars, placeholder="... [TRUNCATED] ...")
 
@@ -106,7 +160,6 @@ def extract_projections(text: str, country: str, url: str, max_chars: int = 8000
     try:
         data = json.loads(content)
     except Exception:
-        # Fallback: return empty result
         data = {
             "country": country,
             "source_url": url,
