@@ -1,0 +1,12 @@
+langchain
+langchain-community
+langchain-core
+huggingface_hub
+python-dotenv
+
+requests
+httpx
+beautifulsoup4
+pypdf
+
+tqdm
