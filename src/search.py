@@ -23,7 +23,7 @@ HARDCODED_SOURCES = {
     ],
 }
 
-
+#TODO create a function that will search for the documents in the web
 def search_official_tourism_docs(country: str) -> List[str]:
     """
     Get a list of official tourism document URLs for a country.
